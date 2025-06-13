@@ -1,31 +1,25 @@
 from django.shortcuts import render, redirect
 from django.http import HttpRequest
 from django.views import View
+from django.db.models import Q
 from django.contrib import messages
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password, check_password
-from django.contrib.auth import login, authenticate
 from authentication.models import User
-
 
 
 # Create your views here.
 
-class IndexView(View):
-    def get(self, request: HttpRequest, *args, **kwargs):
-        return render(request, 'index.html')
-    
-
 class RegisterView(View):
     def get(self, request: HttpRequest, *args, **kwargs):
         if request.session.get('user_id'):
-            return redirect('dashboard')
+            return redirect('dashboard:index')
         return render(request, 'register.html')
 
     def post(self, request: HttpRequest, *args, **kwargs):
         if request.session.get('user_id'):
-            return redirect('dashboard')
+            return redirect('dashboard:index')
          
         # ngambil data dari form register.html
         username = request.POST.get('username')
@@ -41,15 +35,10 @@ class RegisterView(View):
             return render(request, 'register.html')
         
         #validasi username jika username sudah terdaftar
-        if User.objects.filter(username = username).exists():
-            messages.error(request, "Username sudah terdaftar, Tolong gunakan username lain.")
+        if User.objects.filter(Q(username=username) | Q(email=email)).exists():
+            messages.error(request, "Username atau email sudah terdaftar, Tolong gunakan yang lain.")
             return render(request, 'register.html')
-        
-        #validasi email jika email sudah terdaftar
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Email sudah terdaftar.")
-            return render(request, 'register.html')
-        
+
         #validasi email jika email tidak valid
         try: 
             validate_email(email)
@@ -94,14 +83,14 @@ class RegisterView(View):
 class LoginView(View):
     def get(self, request: HttpRequest, *args, **kwargs):
         if request.session.get('user_id'):
-            return redirect('dashboard')
+            return redirect('dashboard:index')
         return render(request, 'login.html')
     
 
     def post(self, request: HttpRequest, *args, **kwargs):
 
         if request.session.get('user_id'):
-            return redirect('dashboard')
+            return redirect('dashboard:index')
 
         # ngambil data dari form login
         username_or_email = request.POST.get('username')
@@ -127,15 +116,13 @@ class LoginView(View):
         
         # Login berhasil 
         request.session['user_id'] = user.id  # Menyimpan ID user yang ada di session
+        request.session['user_fullname'] = user.fullname
         request.session.set_expiry(1000) # session akan dihapus setelah 30 menit 
         messages.success(request, f"Selamat datang, {user.fullname}!")
-        return redirect('dashboard')
+        return redirect('dashboard:index')
 
 
 # Logout dengan menghapus session
 def LogoutView(request):
     request.session.flush()
     return redirect('login')
-
-
-        

@@ -7,6 +7,7 @@ from authentication.models import User
 
 class DashboardView(View):
     def get(self, request: HttpRequest, *args, **kwargs):
-        return render(request, 'dashboard.html')
+        user_fullname = request.session.get('user_fullname')
+        return render(request, 'dashboard.html', {'user_fullname': user_fullname})
 
 
