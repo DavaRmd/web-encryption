@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daftar</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-white shadow-md p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <img src="https://cdn-icons-png.flaticon.com/512/295/295128.png" alt="Logo" class="w-8 h-8">
+      <span class="text-xl font-bold text-blue-600">Aplikasi Enkripsi</span>
+    </div>
+    <div class="space-x-3">
+      <a href="/" class="text-gray-700 hover:text-blue-600 transition">Beranda</a>
+      <a href="/login/" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Login</a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 flex justify-center items-center p-6">
+    <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
+      <h2 class="text-2xl font-bold text-center text-blue-600 mb-6">Buat Akun Baru</h2>
+  
+  
+      <!-- Pesan Error Ketita User Membuat Kesalahan -->
+      {% if messages %}
+        <div class="mb-4 space-y-2 transition-all duration-300 ease-in-out">
+          {% for message in messages %}
+            <div class="flex items-center p-4 text-sm rounded-lg 
+                        {% if message.tags == 'error' %}
+                          bg-red-50 text-red-700 border border-red-300
+                        {% elif message.tags == 'success' %}
+                          bg-green-50 text-green-700 border border-green-300
+                        {% endif %}">
+              {% if message.tags == 'error' %}
+                <svg class="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              {% elif message.tags == 'success' %}
+                <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M5 13l4 4L19 7" />
+                </svg>
+              {% endif %}
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <!-- Register Form -->
+      <form method="POST" onsubmit="showSpinner()" novalidate>
+        {% csrf_token %}
+
+        <div class="mb-4">
+          <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+          <input type="text" id="username" name="username" placeholder="Masukkan username"
+                 required class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="mb-4">
+          <label for="nama" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+          <input type="text" id="nama" name="nama" placeholder="Nama lengkap"
+                 required class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="mb-4">
+          <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+          <input type="email" id="email" name="email" placeholder="contoh@email.com"
+                 required class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="mb-4">
+          <label for="no_hp" class="block text-sm font-medium text-gray-700">Nomor HP</label>
+          <input type="text" id="no_hp" name="no_hp" placeholder="08xxxxxxxxxx"
+                 required class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div class="mb-4">
+          <label for="nip" class="block text-sm font-medium text-gray-700">NIP (Nomor Induk Pegawai)</label>
+          <input type="text" id="nip" name="nip" placeholder="Masukkan NIP (Nomor Induk Pegawai)"
+                 required class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="mb-6 relative">
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••"
+                 required class="mt-1 w-full px-4 py-2 border border-gray-300 rounded-md pr-12 focus:ring-2 focus:ring-blue-500">
+          <span id="togglePassword" class="absolute top-9 right-3 text-gray-600 cursor-pointer select-none">👁️</span>
+        </div>
+
+        <button type="submit" id="submitBtn"
+                class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200">
+          <span id="btnText">Daftar</span>
+        </button>
+      </form>
+
+      <div class="mt-6 text-center text-sm">
+        Sudah punya akun? <a href="/login/" class="text-blue-600 hover:underline">Login di sini</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Toggle password visibility
+    const toggle = document.getElementById('togglePassword');
+    const password = document.getElementById('password');
+    toggle.addEventListener('click', () => {
+      const type = password.type === 'password' ? 'text' : 'password';
+      password.type = type;
+      toggle.textContent = type === 'password' ? '👁️' : '🙈';
+    });
+
+    // Show loading spinner
+    function showSpinner() {
+      const btn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      btn.disabled = true;
+      btnText.innerHTML = `<svg class="animate-spin h-5 w-5 mr-2 inline-block text-white"
+        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10"
+        stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+      </svg> Mendaftarkan...`;
+    }
+  </script>
+</body>
+</html>
