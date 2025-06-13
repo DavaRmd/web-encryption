@@ -123,6 +123,8 @@ class LoginView(View):
 
 
 # Logout dengan menghapus session
-def LogoutView(request):
-    request.session.flush()
-    return redirect('login')
+class LogoutView(View):
+    def get(self, request:HttpRequest, *args, **kwargs):
+        request.session.flush()
+        list(messages.get_messages(request))
+        return redirect('authentication:login')

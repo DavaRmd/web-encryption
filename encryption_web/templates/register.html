@@ -18,8 +18,8 @@
       <span class="text-xl font-bold text-blue-600">Aplikasi Enkripsi</span>
     </div>
     <div class="space-x-3">
-      <a href="/" class="text-gray-700 hover:text-blue-600 transition">Beranda</a>
-      <a href="/login/" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Login</a>
+      <a href={% url "index" %} class="text-gray-700 hover:text-blue-600 transition">Beranda</a>
+      <a href={% url "authentication:login" %} class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Login</a>
     </div>
   </header>
 
@@ -106,7 +106,7 @@
       </form>
 
       <div class="mt-6 text-center text-sm">
-        Sudah punya akun? <a href="/login/" class="text-blue-600 hover:underline">Login di sini</a>
+        Sudah punya akun? <a href={% url "authentication:login" %} class="text-blue-600 hover:underline">Login di sini</a>
       </div>
     </div>
   </main>

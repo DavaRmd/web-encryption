@@ -14,7 +14,7 @@
       <img src="https://via.placeholder.com/40" alt="Logo" class="w-10 h-10 rounded-full" />
       <h1 class="text-xl font-semibold text-blue-700">Sistem Login</h1>
     </div>
-    <a href="/" class="text-blue-600 hover:underline text-sm">← Kembali ke Beranda</a>
+    <a href={% url "index" %} class="text-blue-600 hover:underline text-sm">← Kembali ke Beranda</a>
   </header>
 
   <!-- Login Container -->
@@ -75,7 +75,7 @@
       <!-- Links -->
       <div class="mt-6 text-center text-sm">
         Belum punya akun?
-        <a href={% url 'register' %} class="text-blue-600 hover:underline">Daftar sekarang</a>
+        <a href={% url "authentication:register" %} class="text-blue-600 hover:underline">Daftar sekarang</a>
       </div>
 
     </div>
